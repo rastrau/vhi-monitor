@@ -1,0 +1,47 @@
+ID,row,col
+31|Eastern Jura,1,4
+42|Eastern Swiss Plateau,1,7
+53|Franches-Montagnes,2,3
+32|Balsthal,2,4
+37|Oberaargau,2,5
+39|Freiamt,2,6
+43|Lake Zurich Region,2,7
+47|Alpstein,2,8
+54|Western Jura,3,2
+36|Gruyère,3,3
+33|Lower Emmental,3,4
+38|Upper Emmental,3,5
+40|Western Central Switzerland,3,6
+44|Eastern Central Switzerland,3,7
+51|Rhine Valley,3,8
+52|Prättigau,3,9
+68|Lower Engadine,3,10
+55|Western Swiss Plateau,4,2
+57|Chablais,4,3
+34|Bernese Plateau,4,4
+41|Eastern Bernese Oberland,4,5
+45|Uri Alps,4,6
+48|Glarus Alps,4,7
+49|North Central Grisons,4,8
+67|Upper Engadine,4,9
+66|Grisons Southern Valleys,4,10
+56|Lake Geneva Region,5,1
+59|Northern Valais,5,3
+35|Western Bernese Oberland,5,4
+61|Goms,5,5
+63|Northern Ticino,5,6
+46|Surselva,5,7
+64|Eastern Ticino,5,8
+50|South-Central Grisons,5,9
+58|Valais Southern Alps,6,4
+60|Visp Valleys,6,5
+62|Western Ticino,6,7
+65|Sottoceneri,6,8
+
+mygrid <- data.frame(
+  ID = c("31|Eastern Jura", "42|Eastern Swiss Plateau", "53|Franches-Montagnes", "32|Balsthal", "37|Oberaargau", "39|Freiamt", "43|Lake Zurich Region", "47|Alpstein", "54|Western Jura", "36|Gruyère", "33|Lower Emmental", "38|Upper Emmental", "40|Western Central Switzerland", "44|Eastern Central Switzerland", "51|Rhine Valley", "52|Prättigau", "68|Lower Engadine", "55|Western Swiss Plateau", "57|Chablais", "34|Bernese Plateau", "41|Eastern Bernese Oberland", "45|Uri Alps", "48|Glarus Alps", "49|North Central Grisons", "67|Upper Engadine", "66|Grisons Southern Valleys", "56|Lake Geneva Region", "59|Northern Valais", "35|Western Bernese Oberland", "61|Goms", "63|Northern Ticino", "46|Surselva", "64|Eastern Ticino", "50|South-Central Grisons", "58|Valais Southern Alps", "60|Visp Valleys", "62|Western Ticino", "65|Sottoceneri"),
+  row = c(1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6),
+  col = c(4, 7, 3, 4, 5, 6, 7, 8, 2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 3, 4, 5, 6, 7, 8, 9, 4, 5, 7, 8),
+  stringsAsFactors = FALSE
+)
+geofacet::grid_preview(mygrid)
