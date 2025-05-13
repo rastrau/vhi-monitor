@@ -1,1 +1,3 @@
 # vhi-monitor
+
+![](plot.png)
