@@ -139,6 +139,7 @@ def process_parquet_to_duckdb(output_dir: str, db_path: str = 'vhi.duckdb') -> N
                     EXTRACT(DOY FROM date::DATE) as day_of_year,
                     AVG(vhi_mean) as vhi
                 FROM read_parquet('{file_pattern}')
+                WHERE availability_percentage > 20
                 GROUP BY REGION_NR, date
                 ORDER BY region, date
             """)
