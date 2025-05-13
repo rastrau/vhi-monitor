@@ -174,32 +174,6 @@ def timelines_to_csv(db_path: str, output_dir: str) -> None:
             con.close()
 
 
-def plot_vegetation_timeline(timelines: dict) -> None:
-    """
-    Plot the vegetation health index timeline for each region.
-
-    Args:
-        timelines (dict): Dictionary containing timeline data organized by region and type
-    """
-    import matplotlib.pyplot as plt
-    
-    plt.figure(figsize=(12, 6))
-    
-    for region, data in timelines['vegetation'].items():
-        dates = [item['date'] for item in data]
-        vhi_values = [item['vhi'] for item in data]
-        plt.plot(dates, vhi_values, label=f'Region {region}')
-    
-    plt.title('Vegetation Health Index (VHI) Timeline by Region')
-    plt.xlabel('Date')
-    plt.ylabel('VHI')
-    plt.legend()
-    plt.grid(True)
-    plt.xticks(rotation=45)
-    plt.tight_layout()
-    plt.show()
-    return None
-
 # Example usage
 if __name__ == "__main__":
     collection_id = "ch.swisstopo.swisseo_vhi_v100"  # Collection ID
