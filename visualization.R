@@ -54,6 +54,11 @@ tilemap_layout <- data.frame(
 )
 
 region_labels <- setNames(tilemap_layout$name, tilemap_layout$code)
+region_labeller <- as_labeller(function(region) {
+  labels <- unname(region_labels[as.character(region)])
+  labels[is.na(labels)] <- ""
+  labels
+})
 
 # geofacet::grid_preview(tilemap_layout)
 
@@ -111,7 +116,7 @@ plot_daily_geo <- ggplot(plot_data_daily, aes(x = day_of_year)) +
   facet_geo(
     ~ region,
     grid = tilemap_layout,
-    labeller = as_labeller(region_labels)
+    labeller = region_labeller
   )
 
 plot_daily <- wrap_plots(plot_daily_geo, ncol = 1)
@@ -161,7 +166,7 @@ plot_weekly_geo <- ggplot(plot_data_weekly, aes(x = week_of_year)) +
   facet_geo(
     ~ region,
     grid = tilemap_layout,
-    labeller = as_labeller(region_labels)
+    labeller = region_labeller
   )
 
 plot_weekly_geo <- ggplot(plot_data_weekly, aes(x = week_of_year)) +
@@ -178,7 +183,7 @@ plot_weekly_geo <- ggplot(plot_data_weekly, aes(x = week_of_year)) +
   facet_geo(
     ~ region,
     grid = tilemap_layout,
-    labeller = as_labeller(region_labels)
+    labeller = region_labeller
   )
 
 plot_weekly <- wrap_plots(plot_weekly_geo, ncol = 1)
