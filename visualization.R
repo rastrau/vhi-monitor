@@ -60,6 +60,62 @@ region_labeller <- as_labeller(function(region) {
   labels
 })
 
+classify_vhi <- function(vhi) {
+  factor(
+    case_when(
+      vhi < 20 ~ "Severe stress",
+      vhi < 40 ~ "Poor / dry",
+      vhi < 60 ~ "Near-normal",
+      vhi < 80 ~ "Good",
+      TRUE ~ "Very healthy"
+    ),
+    levels = c(
+      "Severe stress",
+      "Poor / dry",
+      "Near-normal",
+      "Good",
+      "Very healthy"
+    )
+  )
+}
+
+vhi_class_colours <- c(
+  "Severe stress" = "#7f0000",
+  "Poor / dry" = "#d7301f",
+  "Near-normal" = "#fdae61",
+  "Good" = "#66bd63",
+  "Very healthy" = "#1a9850"
+)
+
+split_vhi_segment <- function(segment, thresholds = c(20, 40, 60, 80)) {
+  x <- c(segment$week_of_year, segment$week_of_year_end)
+  y <- c(segment$vhi, segment$vhi_end)
+
+  crossed_thresholds <- thresholds[
+    thresholds > min(y) & thresholds < max(y)
+  ]
+
+  if (length(crossed_thresholds) > 0 && diff(y) != 0) {
+    crossing_x <- x[1] + (crossed_thresholds - y[1]) / diff(y) * diff(x)
+    x <- c(x, crossing_x)
+    y <- c(y, crossed_thresholds)
+  }
+
+  breakpoints <- data.frame(x = x, y = y) %>%
+    arrange(x)
+
+  data.frame(
+    region = segment$region,
+    week_of_year = head(breakpoints$x, -1),
+    week_of_year_end = tail(breakpoints$x, -1),
+    vhi = head(breakpoints$y, -1),
+    vhi_end = tail(breakpoints$y, -1),
+    vhi_class = classify_vhi(
+      (head(breakpoints$y, -1) + tail(breakpoints$y, -1)) / 2
+    )
+  )
+}
+
 # geofacet::grid_preview(tilemap_layout)
 
 # Connect to DuckDB database
@@ -188,7 +244,58 @@ plot_weekly_geo <- ggplot(plot_data_weekly, aes(x = week_of_year)) +
 
 plot_weekly <- wrap_plots(plot_weekly_geo, ncol = 1)
 
+plot_data_weekly_pairs <- plot_data_weekly %>%
+  arrange(region, week_of_year) %>%
+  group_by(region) %>%
+  mutate(
+    week_of_year_end = lead(week_of_year),
+    vhi_end = lead(vhi)
+  ) %>%
+  filter(!is.na(week_of_year_end), week_of_year >= 20, week_of_year_end <= 30) %>%
+  ungroup()
+
+plot_data_weekly_segments <- do.call(
+  rbind,
+  lapply(seq_len(nrow(plot_data_weekly_pairs)), function(i) {
+    split_vhi_segment(plot_data_weekly_pairs[i, ])
+  })
+)
+
+plot_weekly_classified_geo <- ggplot(plot_data_weekly_segments) +
+  geom_segment(
+    aes(
+      x = week_of_year,
+      xend = week_of_year_end,
+      y = vhi,
+      yend = vhi_end,
+      colour = vhi_class
+    ),
+    linewidth = 1,
+    lineend = "round",
+    linejoin = "round"
+  ) +
+  scale_colour_manual(
+    values = vhi_class_colours,
+    drop = FALSE,
+    name = "VHI class"
+  ) +
+  labs(title = "Current Year Vegetation Health Classification",
+       x = "Week of year",
+       y = "VHI") +
+  theme_minimal() +
+  scale_x_continuous(breaks=c(20, 25, 30),
+                     limits=c(20, 30),
+                     minor_breaks=seq(20, 30, 1)) +
+  facet_geo(
+    ~ region,
+    grid = tilemap_layout,
+    labeller = region_labeller
+  )
+
+plot_weekly_classified <- wrap_plots(plot_weekly_classified_geo, ncol = 1)
+
 ggsave("plot.png", plot = plot_weekly, width = 16, height = 12, dpi = 300)
+ggsave("plot_classified.png", plot = plot_weekly_classified, width = 16, height = 12, dpi = 300)
 
 # Clean up connection
 dbDisconnect(con)
